@@ -13,24 +13,21 @@ export default class LoaderPlugin extends Plugin {
 	async onload(): Promise<void> {
 		await this.loadSettings();
 
+		// Always register views so they are available if the plugin is active
+		// This prevents "Plugin has gone away" errors for files in previous sessions
+		this.registerView(constants.VIEW_TYPE_TXT, (leaf: WorkspaceLeaf) => new TxtView(leaf, this));
+		this.registerView(constants.VIEW_TYPE_JSON, (leaf: WorkspaceLeaf) => new JsonView(leaf, this));
+		this.registerView(constants.VIEW_TYPE_YAML, (leaf: WorkspaceLeaf) => new YamlView(leaf, this));
+
 		this.TryRegisterTxt();
-
 		this.tryRegisterJson();
-
 		this.tryRegisterXml();
-
 		this.tryRegisterYaml();
-
 		this.tryRegisterAstro();
-
 		this.tryRegisterTs();
-
 		this.tryRegisterCss();
-
 		this.tryRegisterHtml();
-
 		this.tryRegisterJs();
-
 		this.tryRegisterMjs();
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
@@ -39,7 +36,6 @@ export default class LoaderPlugin extends Plugin {
 
 	private TryRegisterTxt(): void {
 		if (this.settings.doLoadTxt) {
-			this.registerView(constants.VIEW_TYPE_TXT, (leaf: WorkspaceLeaf) => new TxtView(leaf, this));
 			this.registerExtensions([constants.EXT_TXT], constants.VIEW_TYPE_TXT);
 		}
 
@@ -48,8 +44,7 @@ export default class LoaderPlugin extends Plugin {
 	}
 
 	private tryRegisterJson(): void {
-		if (this.settings.doLoadTxt) {
-			this.registerView(constants.VIEW_TYPE_JSON, (leaf: WorkspaceLeaf) => new JsonView(leaf, this));
+		if (this.settings.doLoadJson) {
 			this.registerExtensions([constants.EXT_JSON], constants.VIEW_TYPE_JSON);
 		}
 
@@ -68,7 +63,6 @@ export default class LoaderPlugin extends Plugin {
 
 	private tryRegisterYaml(): void {
 		if (this.settings.doLoadYaml) {
-			this.registerView(constants.VIEW_TYPE_YAML, (leaf: WorkspaceLeaf) => new YamlView(leaf, this));
 			this.registerExtensions([constants.EXT_YAML, constants.EXT_YML], constants.VIEW_TYPE_YAML);
 		}
 		if (this.settings.doCreateYaml)
